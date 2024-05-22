@@ -1,0 +1,14 @@
+Packages/packages-lock.json
+/.vs
+/.vsconfig
+/.idea
+*.sln
+*.apk
+/Temp
+/obj
+/UserSettings
+/Library
+/Logs
+/Assets/TextMesh Pro/
+/Assembly-CSharp.csproj
+/Assembly-CSharp-firstpass.csproj
