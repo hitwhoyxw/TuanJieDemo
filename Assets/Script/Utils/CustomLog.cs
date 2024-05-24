@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -31,7 +32,7 @@ public class CustomLog
     }
     public static string LogFormat(string tag, string msg, LogLevel logLevel)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(10);
         sb.Append("[");
         sb.Append(logLevel);
         sb.Append("]");

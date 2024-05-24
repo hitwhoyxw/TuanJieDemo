@@ -1,0 +1,13 @@
+syntax = "proto3"; 
+package mytest;
+message PlayerStatusMsg {
+    PlayerStatus PlayerStatus=1;
+    //暂定把token==ip当心跳包发
+    string ip=2;
+}
+
+enum PlayerStatus{
+    NONE=0;
+    OFFLINE=1;
+    ONLINE=2;
+}
