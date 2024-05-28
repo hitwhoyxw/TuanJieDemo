@@ -11,3 +11,7 @@ message Vec3{
     float y=2;
     float z=3;
 }
+message NetPlayerTransformMsg{
+    PlayerTransformMsg playerTransformMsg=1;
+    string token=2;
+}

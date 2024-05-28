@@ -51,8 +51,9 @@ public class ClientSocket:EventDispacth,IDisposable
         _socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Tcp);
         Connect();
     }
-    public void SendMessageAsync(byte[] data)
+    public void SendMessageAsync(NetPacket netPacket)
     {
+        byte[] data=netPacket.BufferData;
         var sendArgs = _sendArgsPool.Get();
         sendArgs.SetBuffer(data, 0, data.Length);
         sendArgs.Completed += (sender, e) =>
@@ -205,24 +206,27 @@ public class ClientSocket:EventDispacth,IDisposable
             {
                 // TODO: 释放托管状态(托管对象)
             }
-
-            // TODO: 释放未托管的资源(未托管的对象)并重写终结器
-            // TODO: 将大型字段设置为 null
+            _socket.Dispose();
+            _connectArgs.Dispose();
+            _receiveArgs.Dispose();
+            _arrayPool.Return(_receiveBuffer);
+            _arrayPool.Return(_memBuffer);
+            _sendArgsPool.Clear();
             disposed = true;
         }
     }
 
-    // // TODO: 仅当“Dispose(bool disposing)”拥有用于释放未托管资源的代码时才替代终结器
-    // ~ClientSocket()
-    // {
-    //     // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
-    //     Dispose(disposing: false);
-    // }
-
-    void IDisposable.Dispose()
+    public void Dispose()
     {
         // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    // TODO: 仅当“Dispose(bool disposing)”拥有用于释放未托管资源的代码时才替代终结器
+    ~ClientSocket()
+    {
+        // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
+        Dispose(disposing: false);
     }
 }

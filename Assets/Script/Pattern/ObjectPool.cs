@@ -110,6 +110,7 @@ public class ObjectPool<T>
 public class ConcurrentObjectPool<T> where T : class
 {
     private Stack<T> _pool;
+    private object _locker = new object();
     private int _maxCount;
     private readonly Func<T> _factoryFunc;
     private Dictionary<T, bool> _usedDic;
@@ -128,28 +129,49 @@ public class ConcurrentObjectPool<T> where T : class
     }
     public T Get()
     {
-        lock (_pool)
+        lock (_locker)
         {
             var status = EnsureCapacity();
             if (status == PoolStatus.Idle)
             {
-                return _pool.Pop();
+                var item = _pool.Pop();
+                _usedDic[item] = true;
+                return item;
             }
             return _factoryFunc();
         }
     }
     public void Recycle(T item)
     {
-        lock (_pool)
+        lock (_locker)
         {
             if (_usedDic.ContainsKey(item))
             {
                 _pool.Push(item);
+                _usedDic[item] = false;
             }
             else
             {
                 CustomLog.Elog("ConcurrentObjectPool", "Recycle item not in pool");
             }
+        }
+    }
+    /// <summary>
+    /// 清空对象池,如果是IDisposable的对象会调用Dispose
+    /// </summary>
+    public void Clear()
+    {
+        lock (_locker)
+        {
+            _pool.Clear();
+            foreach (var item in _usedDic)
+            {
+                if(item.Key is IDisposable disposableT)
+                {
+                    disposableT.Dispose();
+                }
+            }
+            _usedDic.Clear();
         }
     }
     private PoolStatus EnsureCapacity()
@@ -181,4 +203,5 @@ public class ConcurrentObjectPool<T> where T : class
         _usedDic = tempDic;
         return PoolStatus.Idle;
     }
+
 }

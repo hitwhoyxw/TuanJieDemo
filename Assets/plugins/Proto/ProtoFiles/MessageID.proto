@@ -1,0 +1,11 @@
+syntax = "proto3"; 
+package mytest;
+enum MessageID {
+    NONE=0;
+    HEART_BEAT=1;
+    ON_AND_OFFLLINE=2;
+    PLAYER_TRANSFORM=3;
+}
+message RequestToken{
+    string token=1;
+}

@@ -12,6 +12,8 @@ public class NetPacket
     private int AvailableLen { get; set; }
 
     private ArrayPool<byte> _arrayPool = ArrayPool<byte>.Shared;
+
+    private bool _cleard = false;
     /// <summary>
     /// for write
     /// </summary>
@@ -36,6 +38,10 @@ public class NetPacket
     }
     public void Clear()
     {
+        if (_cleard)
+        {
+            return;
+        }
         Index = 0;
         MessageID = 0;
         Length = 0;
@@ -45,10 +51,28 @@ public class NetPacket
             _arrayPool.Return(BufferData);
             BufferData = null;
         }
+        _cleard = true;
     }
     private void WriteInt(int intMsg)
     {
         BinaryWriter.WriteIntNoGC(BufferData, Index, intMsg);
         Index += sizeof(int);
+    }
+    public void WriteBytes(byte[] bytes, int count,int offset = 0)
+    {
+        if (bytes == null || bytes.Length<1)
+        {
+            return;
+        }
+        int len= bytes.Length+Index;
+        if (len > AvailableLen)
+        {
+            return;
+        }
+        Array.Copy(bytes, offset, BufferData, Index, count);
+    }
+    ~NetPacket()
+    {
+        Clear();
     }
 }

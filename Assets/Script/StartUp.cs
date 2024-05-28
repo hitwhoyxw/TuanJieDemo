@@ -31,14 +31,13 @@ public class StartUp : MonoBehaviour
     }
     private void OnLocalConnectClicked()
     {
-        netClient.StartConnect();
-        
+        netClient.StartConnect("127.0.0.1", 55011);
     }
     private void OnRemoteConnectClicked()
     {
         string ip = txtIP.text;
         string port = txtPort.text;
         int.TryParse(port, out int portInt);
-        netClient.StartConnect("127.0.0.1", 55011);
+        netClient.StartConnect(ip, portInt);
     }
 }
